@@ -11,15 +11,25 @@ public class MainManager : MonoBehaviour
     public TextMeshProUGUI nameScore;
     public TextMeshProUGUI ScoreText;
     public GameObject GameOverText;
-    
+
     private int m_Points;
+
+    private int highPoints;
     private string currentName;
 
     private bool m_Started = false;
     private bool m_GameOver = false;
 
+    private void Awake()
+    {
+        if ( m_Points != 0)
+        {
+            ChangeScore();
+        }
+    }
     private void Start()
     {
+        m_Points = 0;
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -55,7 +65,15 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(1);
+                if (highPoints < m_Points)
+                {
+                    ChangeHighScore();
+                    SceneManager.LoadScene(1);
+                }
+                else
+                {
+                    SceneManager.LoadScene(1);
+                }
             }
         }
     }
@@ -68,5 +86,16 @@ public class MainManager : MonoBehaviour
     public void GameOver()
     {
         m_GameOver = true;
+    }
+    public void ChangeScore()
+    {
+        currentName = DataManager.Instance.currentName;
+        highPoints = DataManager.Instance.currentPoints;
+        nameScore.text = $"Best Score : {currentName} : {highPoints}";
+    }
+    public void ChangeHighScore()
+    {
+        highPoints = m_Points;
+        nameScore.text = $"Best Score: {currentName} : {highPoints}";
     }
 }

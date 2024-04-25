@@ -2,6 +2,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class DataManager : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class DataManager : MonoBehaviour
     {
         SaveData saveData = new SaveData();
         saveData.Name = currentName;
-        saveData.score = currentPoints;
+        saveData.score = 0;
 
         string json = JsonUtility.ToJson(saveData);
         System.IO.File.WriteAllText(Application.persistentDataPath + "savefile.json", json);
@@ -46,10 +47,11 @@ public class DataManager : MonoBehaviour
 
     public void SaveName(TMP_InputField inputName)
     {
-        currentName = inputName;
+        currentName = inputName.text;
     }
     public void StartGame()
     {
+        SaveInfo();
         SceneManager.LoadScene(1);
     }
 
