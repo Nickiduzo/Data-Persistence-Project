@@ -1,19 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEngine.Windows;
-
-[Serializable]
-public class SaveData
-{
-    public string Name;
-    public int score;
-}
 
 public class MainManager : MonoBehaviour
 {
@@ -21,31 +8,18 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public TextMeshProUGUI nameScore;
     public TextMeshProUGUI ScoreText;
     public GameObject GameOverText;
     
     private int m_Points;
-    private string name;
+    private string currentName;
 
     private bool m_Started = false;
     private bool m_GameOver = false;
 
-    private static MainManager Instance;
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        LoadInfo();
-    }
     private void Start()
     {
-
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -81,60 +55,18 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SaveInfo();
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(1);
             }
         }
     }
-
     private void AddPoint(int point)
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
     }
 
-    private void SaveInfo()
-    {
-        SaveData saveData = new SaveData();
-        saveData.Name = name;
-        saveData.score = m_Points;
-
-        string json = JsonUtility.ToJson(saveData);
-        System.IO.File.WriteAllText(Application.persistentDataPath + "savefile.json", json);
-    }
-
-    private void LoadInfo()
-    {
-        string path = Application.persistentDataPath + "savefile.json";
-        if (System.IO.File.Exists(path))
-        {
-            string json = System.IO.File.ReadAllText(path);
-            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
-
-            name = saveData.Name;
-            m_Points = saveData.score;
-        }
-    }
     public void GameOver()
     {
         m_GameOver = true;
-        GameOverText.SetActive(true);
-    }
-
-    public void SaveName(string inputName)
-    {
-        name = inputName;
-    }
-    public void StartNew()
-    {
-        SceneManager.LoadScene(1);
-    }
-
-    public void CloseGame()
-    {
-#if UNITY_EDITOR
-        EditorApplication.ExitPlaymode();
-#endif
-        Application.Quit();  
     }
 }
