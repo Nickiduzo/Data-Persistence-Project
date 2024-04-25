@@ -1,13 +1,12 @@
-using TMPro;
-using UnityEditor;
+using System.IO;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class DataManager : MonoBehaviour
 {
     public string currentName;
-    public int currentPoints;
+
+    public string highNameScore;
+    public int highScoreValue;
 
     public static DataManager Instance;
     private void Awake()
@@ -22,45 +21,41 @@ public class DataManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         LoadInfo();
     }
-    private void SaveInfo()
+    public void SaveInfo()
     {
-        SaveData saveData = new SaveData();
-        saveData.Name = currentName;
-        saveData.score = 0;
+        SaveData saveData = new SaveData()
+        {
+            name = currentName,
+            highName = highNameScore,
+            highScore = highScoreValue
+        };
 
         string json = JsonUtility.ToJson(saveData);
-        System.IO.File.WriteAllText(Application.persistentDataPath + "savefile.json", json);
+        File.WriteAllText(Application.persistentDataPath + "savefile.json", json);
     }
 
-    private void LoadInfo()
+    public void LoadInfo()
     {
         string path = Application.persistentDataPath + "savefile.json";
-        if (System.IO.File.Exists(path))
+        if (File.Exists(path))
         {
-            string json = System.IO.File.ReadAllText(path);
-            SaveData saveData = JsonUtility.FromJson<SaveData>(json);
+            string json = File.ReadAllText(path);
+            SaveData loadedData = JsonUtility.FromJson<SaveData>(json);
 
-            currentName = saveData.Name;
-            currentPoints = saveData.score;
+            currentName = loadedData.name;
+
+            highNameScore = loadedData.highName;
+            highScoreValue = loadedData.highScore;
         }
     }
 
-    public void SaveName(TMP_InputField inputName)
+    public void UpdateHighScore(int score, string playerName)
     {
-        currentName = inputName.text;
-    }
-    public void StartGame()
-    {
-        SaveInfo();
-        SceneManager.LoadScene(1);
-    }
-
-    public void QuitGame()
-    {
-        SaveInfo();
-#if UNITY_EDITOR
-        EditorApplication.ExitPlaymode();
-#endif
-        Application.Quit();
+        if (score > highScoreValue)
+        {
+            highScoreValue = score;
+            highNameScore = playerName;
+            SaveInfo();
+        }
     }
 }

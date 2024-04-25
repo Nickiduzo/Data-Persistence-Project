@@ -6,6 +6,8 @@ using UnityEngine;
 [Serializable]
 public class SaveData
 {
-    public string Name;
-    public int score;
+    public string name;
+
+    public string highName;
+    public int highScore;
 }
